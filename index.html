@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QuizVortex</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Theme Toggle -->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark/light mode" title="Toggle theme">
+    <span class="theme-icon">🌙</span>
+  </button>
+
+  <!-- Screen Reader Announcer -->
+  <div id="announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <main class="wrapper">
+
+    <!-- ===== FRONT PAGE ===== -->
+    <section id="front-page" class="screen front-page" role="main" aria-label="Welcome screen">
+      <div class="front-card">
+        <div class="logo-wrap">
+          <span class="logo-icon">⚡</span>
+          <h1 class="front-title">QuizVortex</h1>
+        </div>
+        <p class="front-subtitle">Test your knowledge across music, sports, anime, movies, books, and more.</p>
+
+        <ul class="front-features" aria-label="Features">
+          <li><span class="feat-icon">⏱</span> Timed Questions</li>
+          <li><span class="feat-icon">🏆</span> Score & Leaderboard</li>
+          <li><span class="feat-icon">📚</span> Multiple Categories</li>
+          <li><span class="feat-icon">🔥</span> Streak Combos</li>
+        </ul>
+
+        <button id="start-btn" class="btn btn-primary start-btn" aria-label="Start quiz">
+          Start Quiz <span class="btn-icon">🚀</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== DIFFICULTY SELECTION ===== -->
+    <section id="difficulty-screen" class="screen hidden" role="main" aria-label="Choose difficulty">
+      <h1 class="screen-title">Choose Difficulty</h1>
+      <div class="diff-grid">
+        <button class="diff-card" data-diff="easy" aria-label="Easy difficulty">
+          <span class="diff-icon">🌱</span>
+          <span class="diff-label">Easy</span>
+          <span class="diff-desc">20s per question · No penalty</span>
+        </button>
+        <button class="diff-card active" data-diff="medium" aria-label="Medium difficulty">
+          <span class="diff-icon">🔥</span>
+          <span class="diff-label">Medium</span>
+          <span class="diff-desc">15s per question · Skip penalty</span>
+        </button>
+        <button class="diff-card" data-diff="hard" aria-label="Hard difficulty">
+          <span class="diff-icon">💀</span>
+          <span class="diff-label">Hard</span>
+          <span class="diff-desc">10s per question · -1 on skip</span>
+        </button>
+      </div>
+      <button id="diff-continue-btn" class="btn btn-primary mt-20">Continue →</button>
+    </section>
+
+    <!-- ===== CATEGORY SELECTION ===== -->
+    <section id="categories" class="screen hidden" role="main" aria-label="Choose category">
+      <h1 class="screen-title">Choose a Category</h1>
+      <div class="cat-grid" role="list" id="cat-grid"></div>
+      <button id="back-to-diff-btn" class="btn btn-ghost mt-20">← Back</button>
+    </section>
+
+    <!-- ===== QUIZ SCREEN ===== -->
+    <section id="quiz-section" class="screen hidden" role="main" aria-label="Quiz">
+      <header class="quiz-header">
+        <div class="header-left">
+          <h1 class="quiz-category-title" id="quiz-category-title">Quiz</h1>
+          <div class="streak-display" id="streak-display" aria-live="polite">
+            <span id="streak-count"></span>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="score-badge" aria-live="polite">
+            <span class="score-label">Score</span>
+            <span class="score-val" id="score">0</span>
+          </div>
+          <button id="pause-btn" class="btn btn-icon-only" aria-label="Pause quiz" title="Pause">⏸</button>
+        </div>
+      </header>
+
+      <!-- Timer Bar -->
+      <div class="timer-wrap" role="timer" aria-label="Time remaining">
+        <div class="timer-bar" id="timer-bar"></div>
+        <span class="timer-text" id="time-text">15s</span>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-wrap">
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span class="progress-label" id="progress-label">1 / 5</span>
+      </div>
+
+      <!-- Question Card -->
+      <div class="question-card" id="question-card" aria-live="polite">
+        <h2 class="question-text" id="question-text">Loading...</h2>
+        <div class="options-grid" id="options" role="group" aria-label="Answer options"></div>
+      </div>
+
+      <!-- Controls -->
+      <div class="quiz-controls">
+        <button id="skip-btn" class="btn btn-ghost" aria-label="Skip question">Skip ⏭</button>
+        <button id="restart-btn" class="btn btn-ghost" aria-label="Restart quiz">↩ Restart</button>
+      </div>
+
+      <!-- Pause Overlay -->
+      <div id="pause-overlay" class="pause-overlay hidden" role="dialog" aria-modal="true" aria-label="Game paused">
+        <div class="pause-card">
+          <p class="pause-icon">⏸</p>
+          <h2>Paused</h2>
+          <button id="resume-btn" class="btn btn-primary">Resume</button>
+          <button id="quit-btn" class="btn btn-ghost">Quit to Menu</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== RESULT SCREEN ===== -->
+    <section id="result-screen" class="screen hidden" role="main" aria-label="Quiz results">
+      <div class="result-card">
+        <div class="result-emoji" id="result-emoji">🎉</div>
+        <h2 class="result-title" id="result-title">Quiz Complete!</h2>
+        <div class="result-score-wrap">
+          <span class="result-score" id="final-score">0</span>
+          <span class="result-total" id="result-total">/ 5</span>
+        </div>
+        <p class="result-msg" id="result-msg">Great job!</p>
+
+        <!-- Leaderboard -->
+        <div class="leaderboard">
+          <h3>🏆 Leaderboard</h3>
+          <ol id="leaderboard-list" aria-label="Top scores"></ol>
+          <button id="save-score-btn" class="btn btn-accent">Save My Score</button>
+        </div>
+
+        <!-- Review Answers -->
+        <button id="review-btn" class="btn btn-ghost mt-10">📋 Review Answers</button>
+
+        <div class="result-actions">
+          <button id="play-again-btn" class="btn btn-primary">Play Again 🔄</button>
+          <button id="change-cat-btn" class="btn btn-ghost">Change Category</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== REVIEW SCREEN ===== -->
+    <section id="review-screen" class="screen hidden" role="main" aria-label="Answer review">
+      <h2 class="screen-title">Review Answers</h2>
+      <div id="review-list" class="review-list"></div>
+      <button id="review-back-btn" class="btn btn-ghost mt-20">← Back to Results</button>
+    </section>
+
+  </main>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+  <!-- Combo Toast -->
+  <div id="combo-toast" class="combo-toast hidden" aria-live="assertive" role="status"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
